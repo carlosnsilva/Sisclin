@@ -1,0 +1,56 @@
+CREATE DATABASE sisclin;
+USE sisclin;
+
+CREATE TABLE administrador (
+    login VARCHAR(40) NOT NULL,
+    senha VARCHAR(128) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE medico (
+    id_medico SERIAL NOT NULL,
+    nome VARCHAR(50) NOT NULL,
+    login VARCHAR(40) NOT NULL,
+    senha VARCHAR(128) NOT NULL,
+    crm VARCHAR(60) NOT NULL,
+    especialidade VARCHAR(256) NOT NULL DEFAULT 'Clinica geral',
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE atendente (
+    id_atendente SERIAL NOT NULL,
+    nome VARCHAR(50) NOT NULL,
+    login VARCHAR(40) NOT NULL,
+    senha VARCHAR(128) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE cliente (
+    id_cliente SERIAL NOT NULL,
+    nome VARCHAR(50) NOT NULL,    
+    login VARCHAR(40) NOT NULL,
+    senha VARCHAR(128) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+);
+
+CREATE TABLE consulta (
+    id_consulta SERIAL NOT NULL,
+    id_cliente SERIAL NOT NULL,
+    id_medico SERIAL NOT NULL,
+    datahora TIMESTAMP NOT NULL,
+    duracao TIME NOT NULL,
+    CONSTRAINT FK_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+    CONSTRAINT FK_medico FOREIGN KEY (id_medico) REFERENCES medico(id_medico)
+);
+
+CREATE TABLE cliente_hist_consulta (
+    id_historico SERIAL NOT NULL,
+    data_diagnostico DATE NOT NULL,
+    nome_doenca VARCHAR(256) NOT NULL,
+    prescricao TEXT NOT NULL DEFAULT '',
+    consulta_diagnostico SERIAL NOT NULL,
+    cliente SERIAL NOT NULL,
+    CONSTRAINT FK_cliente FOREIGN KEY (cliente) REFERENCES cliente(id_cliente),
+    CONSTRAINT FK_consulta FOREIGN KEY (consulta_diagnostico) REFERENCES consulta(id_consulta)
+);
+
