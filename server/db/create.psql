@@ -2,9 +2,11 @@ CREATE DATABASE sisclin;
 USE sisclin;
 
 CREATE TABLE administrador (
+    id_admin INT NOT NULL,
     login VARCHAR(40) NOT NULL,
     senha VARCHAR(128) NOT NULL,
-    ativo BOOLEAN NOT NULL DEFAULT TRUE
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT PK_id_admin PRIMARY KEY (id_admin)
 );
 
 CREATE TABLE medico (
@@ -14,7 +16,8 @@ CREATE TABLE medico (
     senha VARCHAR(128) NOT NULL,
     crm VARCHAR(60) NOT NULL,
     especialidade VARCHAR(256) NOT NULL DEFAULT 'Clinica geral',
-    ativo BOOLEAN NOT NULL DEFAULT TRUE
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT PK_id_medico PRIMARY KEY (id_medico)
 );
 
 CREATE TABLE atendente (
@@ -22,7 +25,8 @@ CREATE TABLE atendente (
     nome VARCHAR(50) NOT NULL,
     login VARCHAR(40) NOT NULL,
     senha VARCHAR(128) NOT NULL,
-    ativo BOOLEAN NOT NULL DEFAULT TRUE
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT PK_id_atendente PRIMARY KEY (id_atendente)
 );
 
 CREATE TABLE cliente (
@@ -31,6 +35,7 @@ CREATE TABLE cliente (
     login VARCHAR(40) NOT NULL,
     senha VARCHAR(128) NOT NULL,
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT PK_id_cliente PRIMARY KEY (id_cliente)
 );
 
 CREATE TABLE consulta (
@@ -39,6 +44,8 @@ CREATE TABLE consulta (
     id_medico SERIAL NOT NULL,
     datahora TIMESTAMP NOT NULL,
     duracao TIME NOT NULL,
+    status_consulta VARCHAR(16) NOT NULL,
+    CONSTRAINT PK_id_consulta PRIMARY KEY (id_consulta),
     CONSTRAINT FK_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
     CONSTRAINT FK_medico FOREIGN KEY (id_medico) REFERENCES medico(id_medico)
 );
@@ -50,6 +57,7 @@ CREATE TABLE cliente_hist_consulta (
     prescricao TEXT NOT NULL DEFAULT '',
     consulta_diagnostico SERIAL NOT NULL,
     cliente SERIAL NOT NULL,
+    CONSTRAINT PK_historico PRIMARY KEY (id_historico),  
     CONSTRAINT FK_cliente FOREIGN KEY (cliente) REFERENCES cliente(id_cliente),
     CONSTRAINT FK_consulta FOREIGN KEY (consulta_diagnostico) REFERENCES consulta(id_consulta)
 );
