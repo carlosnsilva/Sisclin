@@ -15,7 +15,8 @@ router.post("/", async (req, res) => {
         const {login, senha, tipoUsr, manterAuth} = req.body;
 
         //2. checa se o usuario existe(se não existir gerar erro)
-        const usr = await pool.query("SELECT * FROM $1 WHERE login = $2", [tipoUsr, login]);
+        console.log(tipoUsr,login)
+        const usr = await pool.query(`SELECT * FROM ${tipoUsr} WHERE login = ${login}`);
         if (usr.rows.length === 0) {
             return res.status(401).json({
                 status:"error",

@@ -42,10 +42,13 @@ router.post("/", async (req, res) => {
         // verificacao se todos os campos necessarios para o cadastro existem existem
         // retorna true se todos os campos estiverem presentes
         const listaObjetos = [
-            "Nome", "Login", "Senha", "Confirmação",
+            "nome", "login", "senha", "confirmacao"
         ]
+        console.log(campos)
         let retorno = false
         for (campo of listaObjetos) {
+            console.log(campo)
+            console.log(listaObjetos)
             if (!(campo in campos)) {
                 retorno = true
             }
@@ -68,28 +71,28 @@ router.post("/", async (req, res) => {
 
         // busca por erros nos campos informados
         // -- busca por erros na senha 
-        if ((erros["Senha"] === undefined) && (erros["Confirmação"] === undefined)) {
-            if (campos.senha != campos.Confirmação) {
-                erros["Senhas"] = "As Senhas divergem"
+        if ((erros["senha"] === undefined) && (erros["confirmacao"] === undefined)) {
+            if (campos.senha != campos.confirmacao) {
+                erros["senhas"] = "As Senhas divergem"
             } else if (senhaInsegura(campos.senha)) {
-                erros["Senhas"] = "As Senhas devem tery 8 caracteres ou mais, possuir: letra minúscula, letra maiúscula, número e caractere especial"
+                erros["senhas"] = "As Senhas devem tery 8 caracteres ou mais, possuir: letra minúscula, letra maiúscula, número e caractere especial"
             }
         }
         // -- verificacao se o nome possui 3 caracteres ou mais
-        if(erros["Nome"] == undefined) {
+        if(erros["nome"] == undefined) {
             if (campos.nome.length < 3) {
                 erros["nome"] = "O nome do usuário deve possuir 3 caracteres ou mais"
             }
         }        
         // -- verificacao se o login do usuário possúi menos de 6 caracteres / se existe no banco de dados
-        if (erros["Login"] === undefined) {
+        if (erros["login"] === undefined) {
             if (campos.login.length <= 5) {
-                erros["Login"] = "O login do usuário deve possuir mais de 6 caracteres."
+                erros["login"] = "O login do usuário deve possuir mais de 6 caracteres."
             }
         } else {
-            const busca = await db.query("SELECT * FROM $1 x WHERE x.login = $2;", [campos.tipocadastro, campos.login])
+            const busca = await db.query(`SELECT * FROM ${campos.tipocadastro} x WHERE x.login = '${campos.login}'`)
             if (busca.rowCount != 0) {
-                erros["Login"] = "Login indisponível"
+                erros["login"] = "Login indisponível"
             }
         }
 
@@ -98,15 +101,23 @@ router.post("/", async (req, res) => {
 
             const senhaHash = await bcrypt.hash(campos.senha, 11);
 
-            let insert = "INSERT INTO $1(nome, login, senha"
+            let insert = ""
 
             if (campos.tipocadastro === "medico") {
-                insert += "crm, especialidade) VALUES ($2, $3, $4, $5, $6)"
-            } else {
-                insert += ") VALUES ($2, $3, $4)"
-            } 
+                
+                await db.query(`INSERT INTO medico(nome, login, senha, crm, especialidade) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}', '${campos.crm}', '${campos.especialidade}')`)
 
-            await db.query(insert, [campos.tipocadastro, campos.nome, campos.login, senhaHash, campos.crm, campos.especialidade])
+            } else if (campos.tipocadastro == "atendente") {
+                
+                console.log(`INSERT INTO atendente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}')`)
+                await db.query(`INSERT INTO atendente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}')`)
+            }else if (campos.tipocadastro === "cliente") {
+                
+                //console.log(`INSERT INTO cliente (nome, login, senha) VALUES (${campos.nome}, ${campos.login}, ${campos.senha})`)
+                await db.query(`INSERT INTO cliente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}')`)
+            } else{
+                console.log("Não entrei em lugar nenhum")
+            }
 
             // retorna um json contendo o email e o login do usuario
             return res.status(200).json({

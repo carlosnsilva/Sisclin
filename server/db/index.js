@@ -5,7 +5,7 @@ const { Pool } = require("pg");
 const configs = {
     user:"postgres",
     host:"localhost",
-    password:"apsagaz",
+    password:"carlos",
     database:"sisclin",
     port:5432,
     client_encoding:"UTF8",
