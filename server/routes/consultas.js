@@ -11,7 +11,7 @@ const db = require("../db");
 
 router.get("/agendamentos", async function(req, res) {
     try {
-        const usr = await db.query("SELECT x.id_$1 FROM $1 x WHERE x.login = $2;" ,[req.params.consultante, req.params.login]) 
+        const usr = await db.query(`SELECT x.id_${req.params.consultante} FROM ${req.params.consultante} x WHERE x.login = ${req.params.login}`) 
         let query;
 
         if (usr.rows.length === 0) {
@@ -23,9 +23,9 @@ router.get("/agendamentos", async function(req, res) {
             });
         } else {
             if (req.params.consultante === "medico") {
-                query = await db.query("SELECT * FROM consulta c WHERE c.id_medico = $1;", [usr.rows[0].id_medico]) 
+                query = await db.query(`SELECT * FROM consulta c WHERE c.id_medico = ${usr.rows[0].id_medico}`) 
             } else {
-                query = await db.query("SELECT * FROM consulta c WHERE c.id_cliente = $1;", [usr.rows[0].id_cliente])
+                query = await db.query(`SELECT * FROM consulta c WHERE c.id_cliente = ${usr.rows[0].id_cliente}`)
             }            
         }
 
@@ -49,7 +49,7 @@ router.get("/agendamentos", async function(req, res) {
 
 router.get("/historico", async function(req, res) {
     try {
-        const usr = await db.query("SELECT c.id_cliente FROM cliente WHERE c.login = $1;" ,[req.params.login]) 
+        const usr = await db.query(`SELECT c.id_cliente FROM cliente WHERE c.login = ${req.params.login}`) 
         let query;
 
         if (usr.rows.length === 0) {
@@ -61,7 +61,7 @@ router.get("/historico", async function(req, res) {
             });
         }
         
-        query = await db.query("SELECT * FROM cliente_hist_consulta chc WHERE chc.cliente = $1;", [usr.rows[0].id_cliente]);
+        query = await db.query(`SELECT * FROM cliente_hist_consulta chc WHERE chc.cliente = ${usr.rows[0].id_cliente}`);
 
         res.status(200).json({
             status:"success",

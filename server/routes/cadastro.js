@@ -35,7 +35,6 @@ router.post("/", async (req, res) => {
     }
 
     try {
-
         const erros = {}
         const campos = req.body
 
@@ -44,12 +43,10 @@ router.post("/", async (req, res) => {
         const listaObjetos = [
             "nome", "login", "senha", "confirmacao"
         ]
-        console.log(campos)
         let retorno = false
         for (campo of listaObjetos) {
-            console.log(campo)
-            console.log(listaObjetos)
             if (!(campo in campos)) {
+                console.log(campos)
                 retorno = true
             }
         }
@@ -103,21 +100,13 @@ router.post("/", async (req, res) => {
 
             let insert = ""
 
-            if (campos.tipocadastro === "medico") {
-                
-                await db.query(`INSERT INTO medico(nome, login, senha, crm, especialidade) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}', '${campos.crm}', '${campos.especialidade}')`)
-
-            } else if (campos.tipocadastro == "atendente") {
-                
-                console.log(`INSERT INTO atendente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}')`)
-                await db.query(`INSERT INTO atendente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}')`)
+            if (campos.tipocadastro === "medico") {                
+                await db.query(`INSERT INTO medico(nome, login, senha, crm, especialidade) VALUES ('${campos.nome}', '${campos.login}', '${senhaHash}', '${campos.crm}', '${campos.especialidade}')`)
+            } else if (campos.tipocadastro == "atendente") {                
+                await db.query(`INSERT INTO atendente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${senhaHash}')`)
             }else if (campos.tipocadastro === "cliente") {
-                
-                //console.log(`INSERT INTO cliente (nome, login, senha) VALUES (${campos.nome}, ${campos.login}, ${campos.senha})`)
-                await db.query(`INSERT INTO cliente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${campos.senha}')`)
-            } else{
-                console.log("Não entrei em lugar nenhum")
-            }
+                await db.query(`INSERT INTO cliente (nome, login, senha) VALUES ('${campos.nome}', '${campos.login}', '${senhaHash}')`)
+            } 
 
             // retorna um json contendo o email e o login do usuario
             return res.status(200).json({
